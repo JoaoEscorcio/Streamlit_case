@@ -8,6 +8,12 @@ import plotly.express as px
 # Configurações gerais do dashboard
 st.set_page_config(page_title="Dashboard do Mercado Imobiliário em Miami", layout="wide")
 
+
+# Carregando o CSS customizado
+with open("frontend/styles.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
 # Definindo a URL da API
 API_URL = "http://localhost:8000/api"
 
