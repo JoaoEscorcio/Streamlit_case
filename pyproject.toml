@@ -16,6 +16,7 @@ fastapi = "^0.115.12"
 uvicorn = "^0.34.0"
 streamlit = "^1.44.1"
 requests = "^2.32.3"
+plotly = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]
