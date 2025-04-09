@@ -1,42 +1,156 @@
-/* Estilo geral */
+/* ---------- Variáveis ---------- */
+:root {
+    --primary-color: #0F4C81;
+    --secondary-color: #1C1C1C;
+    --accent-color: #FF7F50;
+    --light-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+}
+
+/* ---------- Reset ---------- */
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--secondary-color);
 }
 
-/* Cabeçalho */
-header h1 {
-    font-size: 2rem;
-    color: #333;
+/* ---------- Cabeçalho ---------- */
+h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 2px;
+    margin-bottom: 20px;
 }
 
-/* Abas */
-.stTabs {
-    border-radius: 8px;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
+h2, h3 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
-/* Indicadores de Métricas */
-.metric-container {
+
+
+/* ---------- Sidebar refinada ---------- */
+.css-1d391kg, .stSidebar {
+    background-color: #f1f3f6 !important;
+    padding: 20px !important;
+    border-right: 1px solid #ddd;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+/* ---------- Filtros ---------- */
+.stSlider, .stSelectbox, .stMultiSelect, .stNumberInput, .stCheckbox {
+    background-color: var(--card-bg) !important;
     padding: 10px;
-    border-radius: 8px;
-    margin: 5px;
-    background-color: #e8f4fc;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 15px;
+}
+
+/* ---------- Métricas ---------- */
+.stMetric {
+    background-color: var(--card-bg);
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.metric-container {
+    background-color: var(--card-bg);
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
 }
 
 .metric-title {
-    color: #006699;
+    color: var(--primary-color);
     font-weight: bold;
 }
 
 .metric-value {
-    color: #333;
+    color: var(--secondary-color);
     font-size: 1.5rem;
 }
 
-/* Gráficos */
+/* ---------- Gráficos ---------- */
 .plotly-graph {
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-top: 10px;
+}
+
+/* ---------- Dropdown horizontal (selectbox) ---------- */
+.stSelectbox label {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* ---------- Botões (caso use) ---------- */
+.stButton > button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: 0.3s ease-in-out;
+}
+
+.stButton > button:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* ---------- Rodapé ---------- */
+footer, .stFooter {
+    color: #999;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 20px 0;
+}
+
+/* ---------- Divisores ---------- */
+hr, .stDivider {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 30px 0;
+}
+
+/* ---------- Container Principal ---------- */
+.main-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px 40px;
+}
+
+/* ---------- Selectbox com margem suave ---------- */
+.stSelectbox {
+    margin-bottom: 30px !important;
+}
+
+/* ---------- Espaçamento entre seções ---------- */
+.section-title {
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.graph-block {
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+
+/* ---------- Métricas alinhadas ---------- */
+.metric-container {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

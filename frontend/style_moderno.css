@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+
+/* ---------- Variáveis ---------- */
+:root {
+    --primary-color: #2E3A59;
+    --secondary-color: #5A5A5A;
+    --accent-color: #4C8BF5;
+    --light-bg: #FAFAFC;
+    --card-bg: #FFFFFF;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --border-radius: 12px;
+}
+
+/* ---------- Reset + Correções de Layout ---------- */
+html, body, .main, .block-container {
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+body {
+    background-color: var(--light-bg) !important;
+    font-family: 'Segoe UI', sans-serif !important;
+    color: var(--secondary-color);
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- Cabeçalho ---------- */
+h1 {
+    font-size: 2.2rem !important;
+    font-weight: 700 !important;
+    color: var(--primary-color) !important;
+    margin-top: 2px !important;
+    margin-bottom: 20px !important;
+}
+
+h2, h3 {
+    color: var(--primary-color) !important;
+    font-weight: 700 !important;
+    margin-bottom: 10px !important;
+}
+
+/* ---------- Sidebar elegante ---------- */
+.css-1d391kg, .stSidebar {
+    background-color: #f0f2f5 !important;
+    padding: 25px !important;
+    border-right: 1px solid #e0e0e0;
+}
+
+/* ---------- Filtros ---------- */
+.stSlider, .stSelectbox, .stMultiSelect, .stNumberInput, .stCheckbox {
+    background-color: var(--card-bg) !important;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+}
+
+/* ---------- Métricas ---------- */
+.stMetric {
+    background-color: var(--card-bg);
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.metric-container {
+    background-color: var(--card-bg);
+    padding: 16px;
+    margin: 10px 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100px;
+}
+
+.metric-title {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.metric-value {
+    color: var(--secondary-color);
+    font-size: 1.6rem;
+}
+
+/* ---------- Gráficos ---------- */
+.plotly-graph {
+    background-color: var(--card-bg);
+    padding: 16px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+}
+
+/* ---------- Dropdown (selectbox) ---------- */
+.stSelectbox label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* ---------- Botões ---------- */
+.stButton > button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease-in-out;
+    font-weight: 600;
+}
+
+.stButton > button:hover {
+    background-color: #2a6de0;
+    color: white;
+}
+
+/* ---------- Rodapé ---------- */
+footer, .stFooter {
+    color: #999;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 20px 0;
+}
+
+/* ---------- Divisores ---------- */
+hr, .stDivider {
+    border: none;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 30px 0;
+}
+
+/* ---------- Container Principal ---------- */
+.main-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 30px 50px;
+}
+
+/* ---------- Selectbox Margem ---------- */
+.stSelectbox {
+    margin-bottom: 25px !important;
+}
+
+/* ---------- Espaçamento entre seções ---------- */
+.section-title {
+    margin-top: 45px;
+    margin-bottom: 25px;
+}
+
+.graph-block {
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
