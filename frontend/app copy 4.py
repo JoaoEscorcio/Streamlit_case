@@ -1,96 +1,62 @@
-# app.py (com CSS aplicado corretamente)
-
 import streamlit as st
 import pandas as pd
-import requests
-import pydeck as pdk
 import plotly.express as px
-from pathlib import Path
 
-# Configuração da página
-st.set_page_config(page_title="Dashboard do Mercado Imobiliário em Miami", layout="wide")
+def render_temporal(get_data):
+    st.header("📅 Análise Temporal de Vendas")
 
-# CSS aplicado direto no app
-css_path = Path(__file__).parent / "style_moderno.css"
-with open(css_path) as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    stats = get_data("houses/temporal-analysis")
 
-# Toggle de tema
-modo_escuro = st.sidebar.toggle("🌙 Modo Escuro", value=False)
+    if stats:
+        st.subheader("📊 Indicadores de Vendas Temporais")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Preço Médio Atual", f"${stats['avg_price']:,.2f}")
+        col2.metric("Preço Médio Anterior", f"${stats['prev_avg_price']:,.2f}")
+        col3.metric("Variação Anual", f"{stats['annual_variation']:.2f}%")
 
-if modo_escuro:
-    st.markdown('<body data-theme="dark">', unsafe_allow_html=True)
-else:
-    st.markdown('<body data-theme="light">', unsafe_allow_html=True)
+        col4, col5 = st.columns(2)
+        col4.metric("📈 Mês com Maior Preço", f"Mês {stats['month_max']}", delta=f"${stats['max_price']:,.2f}")
+        col5.metric("📉 Mês com Menor Preço", f"Mês {stats['month_min']}", delta=f"${stats['min_price']:,.2f}")
 
-# Importando os módulos das abas
-from aba1_mapa import render_mapa
-from aba2_preco import render_preco
-from aba3_distancias import render_distancias
-from aba4_temporal import render_temporal
+        # Gráfico de Linha - Variação dos Preços ao Longo do Tempo
+        st.subheader("📉 Evolução dos Preços ao Longo do Tempo")
+        df_monthly = pd.DataFrame({
+            "Mês": stats["months"],
+            "Preço Médio": stats["monthly_prices"]
+        })
 
-# Definindo a URL da API
-API_URL = "http://localhost:8000/api"
+        fig_line = px.line(df_monthly, x="Mês", y="Preço Médio",
+                           title="Variação Mensal dos Preços",
+                           labels={"Mês": "Mês", "Preço Médio": "Preço ($)"},
+                           template=None)
 
-def get_data(endpoint, params=None):
-    try:
-        response = requests.get(f"{API_URL}/{endpoint}", params=params)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        st.error(f"Erro ao obter dados: {e}")
-        return {}
+        fig_line.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="#1E1E2F"),
+            xaxis=dict(showgrid=False),
+            yaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.07)")
+        )
 
-# Layout principal
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
-st.markdown("<h1>Dashboard do Mercado Imobiliário em Miami</h1>", unsafe_allow_html=True)
-st.markdown("<h2>Navegação entre Análises</h2>", unsafe_allow_html=True)
+        st.plotly_chart(fig_line, use_container_width=True)
 
-tabs = ["Mapa Interativo", "Análise de Preço", "Impacto das Distâncias", "Análise Temporal de Vendas"]
-selected_tab = st.selectbox(label="", options=tabs)
+        # Média móvel de 3 meses
+        st.subheader("📊 Média Móvel dos Preços (3 Meses)")
+        df_monthly["Média Móvel"] = df_monthly["Preço Médio"].rolling(window=3).mean()
 
-# Filtros
-quality_options = ["Qualquer"] + [str(i) for i in range(1, 10)]
+        fig_avg = px.line(df_monthly, x="Mês", y="Média Móvel",
+                          title="Média Móvel de 3 Meses dos Preços",
+                          labels={"Mês": "Mês", "Média Móvel": "Preço ($)"},
+                          template=None)
 
-with st.sidebar.expander("🎛️ Filtros Comuns", expanded=True):
-    min_price, max_price = st.slider("Faixa de Preço ($)", 50000, 3000000, (100000, 800000))
-    max_age = st.slider("Idade máxima das casas", 0, 100, 30)
-    min_area = st.slider("Área Mínima (sq ft)", 500, 5000, 1000)
-    structure_quality = st.selectbox("Qualidade da Estrutura", quality_options)
+        fig_avg.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="#1E1E2F"),
+            xaxis=dict(showgrid=False),
+            yaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.07)")
+        )
 
-with st.sidebar.expander("🌊 Distância e Ruído", expanded=False):
-    max_ocean_dist = st.slider("Distância Máxima ao Oceano (m)", 0, 30000, 15000)
-    max_hwy_dist = st.slider("Distância Máxima à Rodovia (m)", 0, 10000, 5000)
-    airport_noise = st.selectbox("Ruído Aéreo", ["Qualquer", "Sim", "Não"])
-
-params = {
-    "min_price": min_price,
-    "max_price": max_price,
-    "max_age": max_age,
-    "min_area": min_area,
-    "max_ocean_dist": max_ocean_dist,
-    "max_hwy_dist": max_hwy_dist,
-}
-if structure_quality != "Qualquer":
-    params["structure_quality"] = int(structure_quality)
-if airport_noise == "Sim":
-    params["avno60plus"] = 1
-elif airport_noise == "Não":
-    params["avno60plus"] = 0
-
-# Tabs
-if selected_tab == "Mapa Interativo":
-    render_mapa(get_data, params)
-elif selected_tab == "Análise de Preço":
-    render_preco(get_data)
-elif selected_tab == "Impacto das Distâncias":
-    render_distancias(get_data)
-elif selected_tab == "Análise Temporal de Vendas":
-    render_temporal(get_data)
-
-# Rodapé
-st.markdown("""
-<div style="text-align:center; margin-top: 3rem; font-size: 0.9rem; color: #999;">
-    Desenvolvido por João Victor Escorcio • <a href='mailto:jv.escorcio@gmail.com'>Contato</a>
-</div>
-""", unsafe_allow_html=True)
+        st.plotly_chart(fig_avg, use_container_width=True)
+    else:
+        st.warning("Dados temporais não encontrados.")

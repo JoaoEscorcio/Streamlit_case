@@ -1,9 +1,6 @@
-# aba2_preco.py
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-#from app_utils import get_data  # Ou o caminho do seu get_data se estiver separado
 
 def render_preco(get_data):
     st.header("💰 Análise de Preço por Área")
@@ -23,17 +20,31 @@ def render_preco(get_data):
         prices = price_stats.get("price_distribution", [])
         if prices:
             df_prices = pd.DataFrame(prices, columns=["Preço"])
-            fig_hist = px.histogram(df_prices, x="Preço", nbins=30,
-                                    title="Distribuição dos Preços",
-                                    labels={'Preço': 'Preço ($)', 'y': 'Contagem'},
-                                    template="plotly_white")
+            fig_hist = px.histogram(
+                df_prices, x="Preço", nbins=30,
+                title="Distribuição dos Preços",
+                labels={'Preço': 'Preço ($)', 'y': 'Contagem'},
+            )
+            fig_hist.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="#31333F"),
+                title_font=dict(size=18, color="#31333F"),
+                hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
+            )
             st.plotly_chart(fig_hist, use_container_width=True)
 
             # Boxplot
             st.subheader("📦 Boxplot de Preços")
             fig_box = px.box(df_prices, y="Preço", title="Boxplot dos Preços",
-                             labels={'Preço': 'Preço ($)'},
-                             template="plotly_white")
+                             labels={'Preço': 'Preço ($)'})
+            fig_box.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="#31333F"),
+                title_font=dict(size=18, color="#31333F"),
+                hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
+            )
             st.plotly_chart(fig_box, use_container_width=True)
         else:
             st.warning("Nenhuma distribuição de preço disponível.")
@@ -43,10 +54,18 @@ def render_preco(get_data):
         quality_price_avg = price_stats.get("quality_price_avg", {})
         if quality_price_avg:
             df_quality = pd.DataFrame(list(quality_price_avg.items()), columns=["Qualidade", "Preço Médio"])
-            fig_bar = px.bar(df_quality, x="Qualidade", y="Preço Médio",
-                             title="Preço Médio por Qualidade da Estrutura",
-                             labels={"Qualidade": "Qualidade da Estrutura", "Preço Médio": "Preço ($)"},
-                             template="plotly_white")
+            fig_bar = px.bar(
+                df_quality, x="Qualidade", y="Preço Médio",
+                title="Preço Médio por Qualidade da Estrutura",
+                labels={"Qualidade": "Qualidade da Estrutura", "Preço Médio": "Preço ($)"}
+            )
+            fig_bar.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="#31333F"),
+                title_font=dict(size=18, color="#31333F"),
+                hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
+            )
             st.plotly_chart(fig_bar, use_container_width=True)
         else:
             st.warning("Dados de preço médio por qualidade não encontrados.")
@@ -59,10 +78,18 @@ def render_preco(get_data):
                 "Área (sq ft)": living_area,
                 "Preço ($)": prices
             })
-            fig_scatter = px.scatter(df_area_price, x="Área (sq ft)", y="Preço ($)",
-                                     title="Correlação entre Área e Preço",
-                                     labels={"Área (sq ft)": "Área (sq ft)", "Preço ($)": "Preço ($)"},
-                                     template="plotly_white")
+            fig_scatter = px.scatter(
+                df_area_price, x="Área (sq ft)", y="Preço ($)",
+                title="Correlação entre Área e Preço",
+                labels={"Área (sq ft)": "Área (sq ft)", "Preço ($)": "Preço ($)"}
+            )
+            fig_scatter.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="#31333F"),
+                title_font=dict(size=18, color="#31333F"),
+                hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
+            )
             st.plotly_chart(fig_scatter, use_container_width=True)
         else:
             st.warning("Dados de área e preço não encontrados ou incompatíveis.")
