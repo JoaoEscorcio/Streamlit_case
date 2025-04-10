@@ -3,29 +3,20 @@ from supabase import create_client
 import os
 from dotenv import load_dotenv
 
-# Instância principal da aplicação FastAPI
 app = FastAPI()
 
-# ---------------------------
-# CONFIGURAÇÃO DO SUPABASE
-# ---------------------------
-# Carrega variáveis de ambiente do arquivo .env (URL e KEY do Supabase)
+# Carregar variáveis de ambiente
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
+
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ---------------------------
-# ROTA DE TESTE
-# ---------------------------
 @app.get("/")
 def root():
     return {"message": "API funcionando!"}
 
-# ---------------------------
-# ROTA: /api/houses
-# Lista de imóveis com filtros dinâmicos
-# ---------------------------
+
 @app.get("/api/houses")
 def get_houses(
     min_price: float = Query(None),
@@ -42,13 +33,13 @@ def get_houses(
 ):
     data = []
     page = 0
-    page_size = 1000
+    page_size = 1000  # Ajuste conforme necessário
 
-    # Paginação para buscar todos os registros
+    # Loop para buscar todas as páginas de registros
     while True:
         query = supabase.table("miami_housing").select("*").range(page * page_size, (page + 1) * page_size - 1)
 
-        # Aplicação dos filtros, se fornecidos
+        # Aplicação dos filtros
         if min_price:
             query = query.gte("sale_prc", min_price)
         if max_price:
@@ -70,8 +61,8 @@ def get_houses(
         if max_hwy_dist is not None:
             query = query.lte("hwy_dist", max_hwy_dist)
 
-        # Executa a consulta paginada
         response = query.execute().data
+
         if not response:
             break
 
@@ -80,17 +71,13 @@ def get_houses(
 
     return data
 
-# ---------------------------
-# ROTA: /api/houses/price-stats
-# Estatísticas gerais de preço e clusterização
-# ---------------------------
+
 @app.get("/api/houses/price-stats")
 def price_stats():
     data = []
     page = 0
     page_size = 1000
 
-    # Paginação da tabela
     while True:
         response = supabase.table("miami_housing").select(
             "sale_prc", "lnd_sqfoot", "tot_lvg_area", "structure_quality", "latitude", "longitude"
@@ -102,13 +89,13 @@ def price_stats():
         data.extend(response)
         page += 1
 
-    # Coleta e validação dos campos principais
+    # Extrair colunas
     prices = [d['sale_prc'] for d in data if 'sale_prc' in d]
     land_area = [d['lnd_sqfoot'] for d in data if 'lnd_sqfoot' in d]
     living_area = [d['tot_lvg_area'] for d in data if 'tot_lvg_area' in d]
     structure_quality = [d['structure_quality'] for d in data if 'structure_quality' in d]
 
-    # Estatísticas descritivas de preço
+    # Estatísticas principais
     price_avg = sum(prices) / len(prices) if prices else 0
     price_min = min(prices) if prices else 0
     price_max = max(prices) if prices else 0
@@ -116,14 +103,14 @@ def price_stats():
     price_stddev = (sum((x - price_avg) ** 2 for x in prices) / len(prices)) ** 0.5 if prices else 0
     price_iqr = sorted(prices)[int(0.75 * len(prices))] - sorted(prices)[int(0.25 * len(prices))] if prices else 0
 
-    # Preço médio por qualidade da estrutura
+    # Preço médio por qualidade
     quality_price_avg = {}
     for quality in set(structure_quality):
         quality_prices = [p for p, q in zip(prices, structure_quality) if q == quality]
         if quality_prices:
             quality_price_avg[str(quality)] = sum(quality_prices) / len(quality_prices)
 
-    # Clusterização simples por faixas de preço (baixo, médio, alto)
+    # --------------------- Clusterização ---------------------
     q1 = sorted(prices)[int(len(prices) * 0.33)]
     q2 = sorted(prices)[int(len(prices) * 0.66)]
 
@@ -131,7 +118,12 @@ def price_stats():
     for d in data:
         if all(k in d for k in ["latitude", "longitude", "sale_prc"]):
             sale = d["sale_prc"]
-            faixa = "Baixo" if sale <= q1 else "Médio" if sale <= q2 else "Alto"
+            if sale <= q1:
+                faixa = "Baixo"
+            elif sale <= q2:
+                faixa = "Médio"
+            else:
+                faixa = "Alto"
             price_cluster.append({
                 "latitude": d["latitude"],
                 "longitude": d["longitude"],
@@ -139,7 +131,6 @@ def price_stats():
                 "Faixa de Preço": faixa
             })
 
-    # Resultado final retornado à API
     stats = {
         "price_avg": price_avg,
         "price_min": price_min,
@@ -157,10 +148,7 @@ def price_stats():
 
     return stats
 
-# ---------------------------
-# ROTA: /api/houses/sales-time
-# Estatísticas mensais de venda
-# ---------------------------
+
 @app.get("/api/houses/sales-time")
 def sales_time():
     data = []
@@ -177,14 +165,17 @@ def sales_time():
         data.extend(response)
         page += 1
 
-    # Agrupamento dos preços por mês
     monthly_data = {}
+
     for d in data:
         month = d['month_sold']
         price = d['sale_prc']
-        monthly_data.setdefault(month, []).append(price)
 
-    # Constrói resposta com volume de vendas e preço médio
+        if month not in monthly_data:
+            monthly_data[month] = []
+
+        monthly_data[month].append(price)
+
     result = []
     for month in sorted(monthly_data):
         prices = monthly_data[month]
@@ -196,10 +187,6 @@ def sales_time():
 
     return result
 
-# ---------------------------
-# ROTA: /api/houses/distance-impact
-# Analisa impacto de distâncias e ruído no preço
-# ---------------------------
 @app.get("/api/houses/distance-impact")
 def distance_impact():
     data = []
@@ -216,7 +203,7 @@ def distance_impact():
         data.extend(response)
         page += 1
 
-    # Inicializa agrupamentos por categoria
+    # Inicializa listas
     near_ocean, far_ocean = [], []
     near_hwy, far_hwy = [], []
     airport_noise, no_airport_noise = [], []
@@ -224,7 +211,6 @@ def distance_impact():
     dist_ocean, dist_ocean_price = [], []
     dist_hwy, dist_hwy_price = [], []
 
-    # Classificação das distâncias e ruído
     for d in data:
         price = d.get("sale_prc")
         ocean_dist = d.get("ocean_dist", 0)
@@ -234,6 +220,7 @@ def distance_impact():
         if price is None:
             continue
 
+        # Preenche listas de corte
         if ocean_dist <= 15000:
             near_ocean.append(price)
         else:
@@ -249,8 +236,10 @@ def distance_impact():
         elif ruido == 0:
             no_airport_noise.append(price)
 
+        # Preenche listas completas para scatter
         dist_ocean.append(ocean_dist)
         dist_ocean_price.append(price)
+
         dist_hwy.append(hwy_dist)
         dist_hwy_price.append(price)
 
@@ -270,16 +259,13 @@ def distance_impact():
         "prices_far_highway": far_hwy,
         "prices_airport_noise": airport_noise,
         "prices_no_airport_noise": no_airport_noise,
+        # Novos dados para dispersão
         "dist_ocean": dist_ocean,
         "dist_ocean_price": dist_ocean_price,
         "dist_hwy": dist_hwy,
         "dist_hwy_price": dist_hwy_price
     }
 
-# ---------------------------
-# ROTA: /api/houses/filters-range
-# Gera os limites dos filtros com base nos dados reais
-# ---------------------------
 @app.get("/api/houses/filters-range")
 def get_filters_range():
     response = supabase.table("miami_housing").select(

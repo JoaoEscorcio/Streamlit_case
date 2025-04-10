@@ -6,11 +6,10 @@ from aba2_preco import render_preco
 from aba3_distancias import render_distancias
 from aba4_temporal import render_temporal
 
-# ------------------- CONFIGURAÇÃO INICIAL DA PÁGINA -------------------
+# ------------------- CONFIG -------------------
 st.set_page_config(page_title="Dashboard do Mercado Imobiliário em Miami", layout="wide")
 
-# ------------------- CSS EMBUTIDO PERSONALIZADO -------------------
-# Estilização visual do dashboard com identidade moderna
+# ------------------- ESTILO EMBUTIDO -------------------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -25,27 +24,34 @@ st.markdown("""
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+/* Reset */
 html, body, .stApp {
     background-color: var(--background-color) !important;
     font-family: 'Inter', sans-serif !important;
     color: var(--secondary-color) !important;
 }
 
+/* Remover fundo branco da barra de topo do Streamlit */
 header[data-testid="stHeader"] {
     background-color: var(--light-bg) !important;
     box-shadow: none !important;
 }
 
+
+/* Cabeçalhos */
 h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color) !important;
+    font-family: 'Inter', sans-serif !important;
     font-weight: 700 !important;
 }
 
+/* Sidebar e elementos */
 [data-testid="stSidebar"] > div {
     background-color: var(--background-color) !important;
     padding: 1rem;
 }
 
+/* Componentes interativos (sliders, selects, etc) */
 [data-testid="stSidebar"] .stSlider,
 [data-testid="stSidebar"] .stSelectbox,
 [data-testid="stSidebar"] .stNumberInput,
@@ -60,6 +66,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 18px;
 }
 
+/* Selectbox dropdown */
 .stSelectbox label,
 .stRadio label,
 .stCheckbox label {
@@ -67,6 +74,7 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color) !important;
 }
 
+/* Botões */
 .stButton > button {
     background-color: var(--accent-color);
     color: white;
@@ -77,6 +85,7 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow);
 }
 
+/* Caixas centrais do conteúdo */
 .stSelectbox, .stSlider, .stNumberInput, .stTextInput, .stTextArea {
     background-color: var(--card-color) !important;
     border-radius: var(--border-radius);
@@ -84,10 +93,12 @@ h1, h2, h3, h4, h5, h6 {
     padding: 10px !important;
 }
 
+/* Container principal */
 .block-container {
     padding: 2rem 3rem;
 }
 
+/* Rodapé */
 footer {
     color: #999;
     text-align: center;
@@ -97,13 +108,10 @@ footer {
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------- FUNÇÃO PARA BUSCA DE DADOS VIA API -------------------
+# ------------------- API -------------------
 API_URL = "http://localhost:8000/api"
 
 def get_data(endpoint, params=None):
-    """
-    Função genérica para fazer chamadas à API backend.
-    """
     try:
         response = requests.get(f"{API_URL}/{endpoint}", params=params)
         response.raise_for_status()
@@ -112,23 +120,18 @@ def get_data(endpoint, params=None):
         st.error(f"Erro ao obter dados: {e}")
         return {}
 
-# ------------------- CABEÇALHO DO DASHBOARD -------------------
+# ------------------- TOPO -------------------
 st.markdown("<h1>Dashboard do Mercado Imobiliário em Miami</h1>", unsafe_allow_html=True)
 st.markdown("<h2>Navegação entre Análises</h2>", unsafe_allow_html=True)
 
-# Abas de navegação
-abas = [
-    "Mapa Interativo",
-    "Análise de Preço",
-    "Impacto das Distâncias",
-    "Análise Temporal de Vendas"
-]
+abas = ["Mapa Interativo", "Análise de Preço", "Impacto das Distâncias", "Análise Temporal de Vendas"]
 aberta = st.selectbox("", options=abas)
 
-# ------------------- FILTROS DINÂMICOS COM BASE NA API -------------------
+# ------------------- FILTROS -------------------
+# ------------------- FILTROS DINÂMICOS -------------------
 filtros_range = get_data("houses/filters-range")
 
-# Valores padrão em caso de falha na API
+# Valores padrão de segurança
 price_min = filtros_range.get("price_min", 0)
 price_max = filtros_range.get("price_max", 3000000)
 age_min = filtros_range.get("age_min", 0)
@@ -137,31 +140,41 @@ area_min = filtros_range.get("area_min", 0)
 area_max = filtros_range.get("area_max", 10000)
 qualities = filtros_range.get("qualities", list(range(1, 10)))
 
-# ------------------- SIDEBAR: FILTROS INTERATIVOS -------------------
+# ------------------- SIDEBAR -------------------
 st.sidebar.markdown("## Filtros Comuns")
 
-# Opções de qualidade da estrutura
+# Botão para resetar filtros
+#if st.sidebar.button("🔄 Resetar Filtros"):
+#    st.rerun()
+
 quality_options = ["Qualquer"] + [str(q) for q in qualities]
 
-# Faixa de preço
-min_price, max_price = st.sidebar.slider("Faixa de Preço ($)", price_min, price_max, (price_min, price_max))
+# Faixa de Preço
+min_price, max_price = st.sidebar.slider(
+    "Faixa de Preço ($)",
+    price_min,
+    price_max,
+    (price_min, price_max),
+)
 
 # Idade
 max_age = st.sidebar.slider("Idade máxima das casas", age_min, age_max, age_max)
 
 # Área
-min_area, max_area = st.sidebar.slider("Faixa de Área (sq ft)", area_min, area_max, (area_min, area_max))
+min_area, max_area = st.sidebar.slider(
+    "Faixa de Área (sq ft)", area_min, area_max, (area_min, area_max)
+)
 
-# Qualidade da estrutura
+# Qualidade
 structure_quality = st.sidebar.selectbox("Qualidade da Estrutura", quality_options)
 
-# Filtros adicionais
+# Extras
 with st.sidebar.expander("🌊 Distância e Ruído", expanded=False):
     max_ocean_dist = st.slider("Distância ao Oceano (m)", 0, 30000, 30000)
     max_hwy_dist = st.slider("Distância à Rodovia (m)", 0, 10000, 10000)
     airport_noise = st.selectbox("Ruído Aéreo", ["Qualquer", "Sim", "Não"])
 
-# ------------------- CONSTRUÇÃO DO DICIONÁRIO DE PARÂMETROS -------------------
+# Parâmetros
 params = {
     "min_price": min_price,
     "max_price": max_price,
@@ -172,15 +185,19 @@ params = {
     "max_hwy_dist": max_hwy_dist,
 }
 
-# Adiciona filtros opcionais se selecionados
 if structure_quality != "Qualquer":
     params["structure_quality"] = int(structure_quality)
+
 if airport_noise == "Sim":
     params["avno60plus"] = 1
 elif airport_noise == "Não":
     params["avno60plus"] = 0
 
-# ------------------- LÓGICA DAS ABAS -------------------
+# Debug opcional
+# st.caption(f"Filtros aplicados: {params}")
+
+
+# ------------------- ABAS -------------------
 if aberta == "Mapa Interativo":
     render_mapa(get_data, params)
 elif aberta == "Análise de Preço":
@@ -190,7 +207,7 @@ elif aberta == "Impacto das Distâncias":
 elif aberta == "Análise Temporal de Vendas":
     render_temporal(get_data)
 
-# ------------------- RODAPÉ -------------------
+# ------------------- FOOTER -------------------
 st.markdown("""
     <footer>Desenvolvido por João Victor Escorcio • <a href='mailto:jv.escorcio@gmail.com'>Contato</a></footer>
 """, unsafe_allow_html=True)

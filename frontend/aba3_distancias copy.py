@@ -7,7 +7,7 @@ def render_distancias(get_data):
 
     distance_stats = get_data("houses/distance-impact")
     if distance_stats:
-        # ---------------- KPIs ----------------
+        # KPIs 1
         st.subheader("📊 Indicadores de Preço por Distância")
         col1, col2, col3 = st.columns(3)
         col1.metric("Preço Médio Próximo ao Oceano", f"${distance_stats['avg_price_near_ocean']:,.2f}")
@@ -20,11 +20,14 @@ def render_distancias(get_data):
         col6.metric("Nº Imóveis Próximos à Rodovia", f"{distance_stats['count_near_highway']}")
 
         col7, col8, col9 = st.columns(3)
-        col7.metric("Preço com Ruído Aéreo", f"${distance_stats['avg_price_airport_noise']:,.2f}" if distance_stats['avg_price_airport_noise'] else "N/A")
-        col8.metric("Preço sem Ruído Aéreo", f"${distance_stats['avg_price_no_airport_noise']:,.2f}" if distance_stats['avg_price_no_airport_noise'] else "N/A")
-        col9.metric("Nº Imóveis com Ruído", f"{distance_stats['count_airport_noise']}" if distance_stats['count_airport_noise'] else "N/A")
+        col7.metric("Preço com Ruído Aéreo", 
+                   f"${distance_stats['avg_price_airport_noise']:,.2f}" if distance_stats['avg_price_airport_noise'] else "N/A")
+        col8.metric("Preço sem Ruído Aéreo", 
+                   f"${distance_stats['avg_price_no_airport_noise']:,.2f}" if distance_stats['avg_price_no_airport_noise'] else "N/A")
+        col9.metric("Nº Imóveis com Ruído", 
+                   f"{distance_stats['count_airport_noise']}" if distance_stats['count_airport_noise'] else "N/A")
 
-        # ---------------- Barras ----------------
+        # Gráfico de Barras
         st.subheader("📊 Preço Médio por Categoria de Distância")
         df_dist = pd.DataFrame({
             "Categoria": ["Perto Oceano", "Longe Oceano", "Perto Rodovia", "Longe Rodovia", "Com Ruído", "Sem Ruído"],
@@ -37,15 +40,21 @@ def render_distancias(get_data):
                 distance_stats.get('avg_price_no_airport_noise', 0)
             ]
         })
-        fig_bar = px.bar(df_dist, x="Categoria", y="Preço Médio", title="Preço Médio por Categoria de Distância")
+        fig_bar = px.bar(
+            df_dist, x="Categoria", y="Preço Médio", 
+            title="Preço Médio por Categoria de Distância",
+            labels={"Categoria": "Categoria", "Preço Médio": "Preço ($)"}
+        )
         fig_bar.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color="#31333F"), title_font=dict(size=18, color="#31333F"),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="#31333F"),
+            title_font=dict(size=18, color="#31333F"),
             hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
-        # ---------------- Boxplot ----------------
+        # Boxplot de Preços
         st.subheader("📦 Distribuição de Preços por Categoria")
         df_boxplot = pd.DataFrame({
             "Categoria": (
@@ -62,48 +71,47 @@ def render_distancias(get_data):
                 distance_stats['prices_airport_noise'] + distance_stats['prices_no_airport_noise']
             )
         })
-        fig_box = px.box(df_boxplot, x="Categoria", y="Preço", title="Boxplot de Preços por Categoria")
+        fig_box = px.box(
+            df_boxplot, x="Categoria", y="Preço",
+            title="Boxplot de Preços por Categoria",
+            labels={"Categoria": "Categoria", "Preço": "Preço ($)"}
+        )
         fig_box.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color="#31333F"), title_font=dict(size=18, color="#31333F"),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="#31333F"),
+            title_font=dict(size=18, color="#31333F"),
             hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
         )
         st.plotly_chart(fig_box, use_container_width=True)
 
-        # ---------------- Dispersão: Distância ao Oceano ----------------
-        st.subheader("🌊 Dispersão: Distância ao Oceano vs Preço")
-        if distance_stats.get("dist_ocean") and distance_stats.get("dist_ocean_price"):
-            df_scatter_ocean = pd.DataFrame({
-                "Distância ao Oceano (m)": distance_stats["dist_ocean"],
-                "Preço ($)": distance_stats["dist_ocean_price"]
-            })
-            fig_ocean = px.scatter(
-                df_scatter_ocean, x="Distância ao Oceano (m)", y="Preço ($)",
-                title="Distância ao Oceano vs Preço"
-            )
-            fig_ocean.update_layout(
-                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color="#31333F"), title_font=dict(size=18, color="#31333F"),
-                hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
-            )
-            st.plotly_chart(fig_ocean, use_container_width=True)
+        # Gráfico de Dispersão
+        st.subheader("📍 Correlação entre Distância e Preço")
+        ocean_dist = distance_stats['prices_near_ocean'] + distance_stats['prices_far_ocean']
+        hwy_dist = distance_stats['prices_near_highway'] + distance_stats['prices_far_highway']
+        prices = ocean_dist + hwy_dist
 
-        # ---------------- Dispersão: Distância à Rodovia ----------------
-        st.subheader("🛣️ Dispersão: Distância à Rodovia vs Preço")
-        if distance_stats.get("dist_hwy") and distance_stats.get("dist_hwy_price"):
-            df_scatter_hwy = pd.DataFrame({
-                "Distância à Rodovia (m)": distance_stats["dist_hwy"],
-                "Preço ($)": distance_stats["dist_hwy_price"]
+        min_len = min(len(ocean_dist), len(hwy_dist), len(prices))
+        if min_len > 0:
+            df_scatter = pd.DataFrame({
+                "Distância ao Oceano (m)": ocean_dist[:min_len],
+                "Distância à Rodovia (m)": hwy_dist[:min_len],
+                "Preço": prices[:min_len]
             })
-            fig_hwy = px.scatter(
-                df_scatter_hwy, x="Distância à Rodovia (m)", y="Preço ($)",
-                title="Distância à Rodovia vs Preço"
+            fig_scatter = px.scatter(
+                df_scatter, x="Distância ao Oceano (m)", y="Preço",
+                title="Distância ao Oceano vs Preço",
+                labels={"Distância ao Oceano (m)": "Distância ao Oceano (m)", "Preço": "Preço ($)"}
             )
-            fig_hwy.update_layout(
-                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color="#31333F"), title_font=dict(size=18, color="#31333F"),
+            fig_scatter.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color="#31333F"),
+                title_font=dict(size=18, color="#31333F"),
                 hoverlabel=dict(bgcolor="#F0F2F6", font_size=12)
             )
-            st.plotly_chart(fig_hwy, use_container_width=True)
+            st.plotly_chart(fig_scatter, use_container_width=True)
+        else:
+            st.warning("Dados insuficientes para o gráfico de dispersão.")
     else:
         st.warning("Dados de impacto de distância não encontrados.")
