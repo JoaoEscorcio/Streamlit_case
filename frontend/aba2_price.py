@@ -90,16 +90,16 @@ def render_preco(get_data):
             df_cluster = pd.DataFrame(price_cluster)
 
             color_map = {
-                "Baixo": "#3B82F6",   # Low (blue)
-                "Médio": "#F59E0B",   # Medium (orange)
-                "Alto": "#EF4444"     # High (red)
+                "Low": "#3B82F6",     # Blue
+                "Medium": "#F59E0B",  # Orange
+                "High": "#EF4444"     # Red
             }
 
             fig_cluster = px.scatter_mapbox(
                 df_cluster,
                 lat="latitude",
                 lon="longitude",
-                color="Faixa de Preço",
+                color="Price Range",  # This key must match the API
                 color_discrete_map=color_map,
                 zoom=9,
                 height=550,

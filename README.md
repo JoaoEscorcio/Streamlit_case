@@ -1,108 +1,123 @@
-# 🌍 Dashboard do Mercado Imobiliário em Miami
+# 🌍 Miami Real Estate Market Dashboard
 
-Este projeto é um **dashboard interativo** desenvolvido com **Streamlit** e **FastAPI**, que consome dados imobiliários da cidade de Miami para fornecer **análises visuais e insights estratégicos** sobre preços de venda, localização, estrutura dos imóveis e influências externas como ruído e distâncias.
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-- [Streamlit](https://streamlit.io/) - Interface web interativa
-- [FastAPI](https://fastapi.tiangolo.com/) - Backend para serviços de API
-- [Supabase](https://supabase.com/) - Banco de dados e autenticação (PostgreSQL)
-- [Plotly](https://plotly.com/python/) - Visualizações dinâmicas e profissionais
-- [Pydeck](https://deckgl.readthedocs.io/en/latest/) - Visualização geográfica (mapas interativos)
+This project is an **interactive dashboard** built with **Streamlit** and **FastAPI**, consuming real estate data from Miami to deliver **visual analyses and strategic insights** on property prices, locations, structural quality, and external influences like noise and distances.
 
 ---
 
-## 🔍 Funcionalidades
+## 🚀 Technologies Used
 
-### 📊 Aba 1: **Mapa Interativo**
-- Visualização geográfica dos imóveis filtrados
-- Scatterplot colorido por qualidade de estrutura
-- Hexbin map mostrando densidade de imóveis por região
-
-### 💰 Aba 2: **Análise de Preço**
-- KPIs: preço médio, mediano, máximo e mínimo
-- Histograma e boxplot dos preços
-- Gráfico de dispersão entre área e preço
-- Clusterização geográfica por faixa de preço (baixo, médio, alto)
-
-### 🚗 Aba 3: **Impacto das Distâncias**
-- KPIs comparando preços por proximidade ao oceano, rodovia e ruído aéreo
-- Gráficos de barra e boxplot categorizando os efeitos
-- Gráficos de dispersão entre distância e preço
-
-### 🌐 Aba 4: **Análise Temporal**
-- Evolução mensal dos preços de venda
-- KPIs comparativos com variação percentual
-- Média móvel de 3 meses para análise de tendência
-
-### ⚙️ Filtros
-- Faixa de preço
-- Faixa de área e idade
-- Qualidade da estrutura
-- Distância ao oceano, rodovia e ruído
+- [Streamlit](https://streamlit.io/) – Interactive web interface
+- [FastAPI](https://fastapi.tiangolo.com/) – Backend API services
+- [Supabase](https://supabase.com/) – Cloud-based database and authentication (PostgreSQL)
+- [Plotly](https://plotly.com/python/) – Dynamic and professional visualizations
+- [Pydeck](https://deckgl.readthedocs.io/en/latest/) – Geographic visualizations (interactive maps)
 
 ---
 
-## 🚧 Estrutura do Projeto
+## 🔍 Features
+
+### 📊 Tab 1: **Interactive Map**
+
+- Geographic visualization of filtered properties
+- Scatterplot colored by structure quality
+- Hexbin map showing property density by region
+
+### 💰 Tab 2: **Price Analysis**
+
+- KPIs: average, median, minimum, and maximum prices
+- Price histogram and boxplot
+- Scatterplot of area vs. price
+- Geographic clustering by price range (low, medium, high)
+
+### 🚗 Tab 3: **Impact of Distances**
+
+- KPIs comparing prices by proximity to ocean, highways, and airport noise
+- Bar charts and boxplots categorizing these effects
+- Scatterplots of distances vs. price
+
+### 🌐 Tab 4: **Sales Time Analysis**
+
+- Monthly evolution of sales prices
+- Comparative KPIs with monthly variation percentage
+- 3-month moving average trend analysis
+
+### ⚙️ Filters
+
+- Price range
+- Area and age ranges
+- Structure quality
+- Distance to ocean, highway, and airport noise
+
+---
+
+## 🚧 Project Structure
+
 ```
 .
-├── api/                    # FastAPI - Endpoints de dados
-│   ├── main.py             # Arquivo principal da API
-├── frontend/               # Aplicativo Streamlit
-│   ├── app.py              # Entrada principal da interface
+├── api/                    # FastAPI - Data endpoints
+│   ├── main.py             # Main API file
+├── frontend/               # Streamlit app
+│   ├── app.py              # Main entry point
 │   ├── pages/
-│   │   ├── aba1_mapa.py
-│   │   ├── aba2_preco.py
-│   │   ├── aba3_distancias.py
+│   │   ├── aba1_map.py
+│   │   ├── aba2_price.py
+│   │   ├── aba3_distance.py
 │   │   └── aba4_temporal.py
-├── requirements.txt        # Dependências Python
+├── poetry.lock             # Dependencies lock file
+├── pyproject.toml          # Project metadata and dependencies
 ├── README.md
 ```
 
 ---
 
-## 🚫 Requisitos
+## 🚫 Requirements
+
 - Python 3.10+
-- Conta gratuita no [Supabase](https://supabase.com/)
+- Free account on [Supabase](https://supabase.com/)
 
 ---
 
-## 📚 Como Rodar o Projeto Localmente
+## 📚 How to Run the Project Locally
 
-### 1. Clone o repositório
+### 1. Clone the repository
+
 ```bash
 git clone https://github.com/JoaoEscorcio/Streamlit_case.git
 cd Streamlit_case
 ```
 
-### 2. Crie um ambiente virtual e ative
+### 2. Create and activate a virtual environment
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 .venv\Scripts\activate     # Windows
 ```
 
-### 3. Instale as dependências
+### 3. Install dependencies with Poetry
+
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
-### 4. Crie o arquivo `.env`
+### 4. Create the `.env` file
+
 ```env
-SUPABASE_URL=https://<seu-projeto>.supabase.co
-SUPABASE_KEY=eyJhbGciOi...   # Chave da API
+SUPABASE_URL=https://<your-project>.supabase.co
+SUPABASE_KEY=eyJhbGciOi...   # Your API Key
 ```
 
-### 5. Rode a API (FastAPI)
+### 5. Run the API (FastAPI)
+
 ```bash
 cd api
 uvicorn main:app --reload --port 8000
 ```
 
-### 6. Rode o Frontend (Streamlit)
-Abra outro terminal:
+### 6. Run the Frontend (Streamlit)
+
+Open another terminal:
+
 ```bash
 cd frontend
 streamlit run app.py
@@ -112,26 +127,28 @@ streamlit run app.py
 
 ## 🏙️ Deployment
 
-### ✨ Opções sugeridas:
-- **Render.com**: Ideal para rodar FastAPI (backend)
-- **Streamlit Community Cloud**: Hospedagem gratuita do frontend
+### ✨ Suggested Platforms:
+
+- **Render.com**: Ideal for running FastAPI (backend)
+- **Streamlit Community Cloud**: Free frontend hosting
 
 ---
 
-## 💼 Autor
+## 💼 Author
 
-**João Victor Escorcio**  
-Data Analyst | Python | Streamlit | BI | Dados Imobiliários  
-[LinkedIn](https://www.linkedin.com/in/joaoescorcio/) • [Medium](https://medium.com/@jv.escorcio) • jv.escorcio@gmail.com
-
----
-
-## ✨ To-Do Futuro
-- Autenticação de usuários
-- Exportação de relatórios
-- Previsão de preços com Machine Learning
+**João Victor Escorcio**\
+Data Analyst | Python | Streamlit | BI | Real Estate Data\
+[LinkedIn](https://www.linkedin.com/in/joaoescorcio/) • [Medium](https://medium.com/@jv.escorcio) • [jv.escorcio@gmail.com](mailto\:jv.escorcio@gmail.com)
 
 ---
 
-Feito com ❤️ por um apaixonado por dados!
+## ✨ Future To-Do
+
+- User authentication
+- Report export functionality
+- Price prediction using Machine Learning
+
+---
+
+Made with ❤️ by a data enthusiast!
 

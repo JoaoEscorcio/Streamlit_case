@@ -131,13 +131,14 @@ def price_stats():
     for d in data:
         if all(k in d for k in ["latitude", "longitude", "sale_prc"]):
             sale = d["sale_prc"]
-            faixa = "Baixo" if sale <= q1 else "Médio" if sale <= q2 else "Alto"
+            range_label = "Low" if sale <= q1 else "Medium" if sale <= q2 else "High"
             price_cluster.append({
                 "latitude": d["latitude"],
                 "longitude": d["longitude"],
                 "sale_prc": sale,
-                "Faixa de Preço": faixa
+                "Price Range": range_label
             })
+
 
     # Resultado final retornado à API
     stats = {
