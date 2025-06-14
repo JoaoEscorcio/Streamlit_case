@@ -3,26 +3,26 @@ import pandas as pd
 import plotly.express as px
 
 def render_preco(get_data):
-    st.header("💰 Análise de Preço por Área")
+    st.header("💰 Price Analysis by Area")
 
     price_stats = get_data("houses/price-stats")
     if price_stats:
         # ---------------- KPIs ----------------
-        st.subheader("📊 Indicadores de Preço")
+        st.subheader("📊 Price Indicators")
         col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Preço Médio", f"${price_stats['price_avg']:,.2f}")
-        col2.metric("Preço Mediano", f"${price_stats['price_median']:,.2f}")
-        col3.metric("Preço Mínimo", f"${price_stats['price_min']:,.2f}")
-        col4.metric("Preço Máximo", f"${price_stats['price_max']:,.2f}")
+        col1.metric("Average Price", f"${price_stats['price_avg']:,.2f}")
+        col2.metric("Median Price", f"${price_stats['price_median']:,.2f}")
+        col3.metric("Minimum Price", f"${price_stats['price_min']:,.2f}")
+        col4.metric("Maximum Price", f"${price_stats['price_max']:,.2f}")
 
-        # ---------------- Histograma ----------------
-        st.subheader("📈 Distribuição de Preços")
+        # ---------------- Histogram ----------------
+        st.subheader("📈 Price Distribution")
         prices = price_stats.get("price_distribution", [])
         if prices:
-            df_prices = pd.DataFrame(prices, columns=["Preço"])
-            fig_hist = px.histogram(df_prices, x="Preço", nbins=30,
-                                    title="Distribuição dos Preços",
-                                    labels={'Preço': 'Preço ($)', 'y': 'Contagem'})
+            df_prices = pd.DataFrame(prices, columns=["Price"])
+            fig_hist = px.histogram(df_prices, x="Price", nbins=30,
+                                    title="Price Distribution",
+                                    labels={'Price': 'Price ($)', 'y': 'Count'})
             fig_hist.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -33,9 +33,9 @@ def render_preco(get_data):
             st.plotly_chart(fig_hist, use_container_width=True)
 
             # ---------------- Boxplot ----------------
-            st.subheader("📦 Boxplot de Preços")
-            fig_box = px.box(df_prices, y="Preço", title="Boxplot dos Preços",
-                             labels={'Preço': 'Preço ($)'})
+            st.subheader("📦 Price Boxplot")
+            fig_box = px.box(df_prices, y="Price", title="Price Boxplot",
+                             labels={'Price': 'Price ($)'})
             fig_box.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -45,14 +45,14 @@ def render_preco(get_data):
             )
             st.plotly_chart(fig_box, use_container_width=True)
 
-        # ---------------- Barras por Qualidade ----------------
-        st.subheader("🏠 Preço Médio por Qualidade da Estrutura")
+        # ---------------- Bar by Quality ----------------
+        st.subheader("🏠 Average Price by Structure Quality")
         quality_price_avg = price_stats.get("quality_price_avg", {})
         if quality_price_avg:
-            df_quality = pd.DataFrame(list(quality_price_avg.items()), columns=["Qualidade", "Preço Médio"])
-            fig_bar = px.bar(df_quality, x="Qualidade", y="Preço Médio",
-                             title="Preço Médio por Qualidade da Estrutura",
-                             labels={"Qualidade": "Qualidade da Estrutura", "Preço Médio": "Preço ($)"})
+            df_quality = pd.DataFrame(list(quality_price_avg.items()), columns=["Quality", "Average Price"])
+            fig_bar = px.bar(df_quality, x="Quality", y="Average Price",
+                             title="Average Price by Structure Quality",
+                             labels={"Quality": "Structure Quality", "Average Price": "Price ($)"})
             fig_bar.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -62,17 +62,17 @@ def render_preco(get_data):
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-        # ---------------- Dispersão Área vs Preço ----------------
-        st.subheader("📐 Relação entre Área e Preço")
+        # ---------------- Area vs Price Scatter ----------------
+        st.subheader("📐 Area vs. Price Relationship")
         living_area = price_stats.get("living_area_distribution", [])
         if prices and living_area and len(prices) == len(living_area):
             df_area_price = pd.DataFrame({
-                "Área (sq ft)": living_area,
-                "Preço ($)": prices
+                "Living Area (sq ft)": living_area,
+                "Price ($)": prices
             })
-            fig_scatter = px.scatter(df_area_price, x="Área (sq ft)", y="Preço ($)",
-                                     title="Correlação entre Área e Preço",
-                                     labels={"Área (sq ft)": "Área (sq ft)", "Preço ($)": "Preço ($)"})
+            fig_scatter = px.scatter(df_area_price, x="Living Area (sq ft)", y="Price ($)",
+                                     title="Correlation Between Area and Price",
+                                     labels={"Living Area (sq ft)": "Living Area (sq ft)", "Price ($)": "Price ($)"})
             fig_scatter.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -82,17 +82,17 @@ def render_preco(get_data):
             )
             st.plotly_chart(fig_scatter, use_container_width=True)
 
-        # ---------------- Clusterização por localização ----------------
-        st.subheader("📍 Clusterização de Faixas de Preço por Localização")
+        # ---------------- Price Cluster by Location ----------------
+        st.subheader("📍 Price Range Clustering by Location")
 
         price_cluster = price_stats.get("price_cluster", [])
         if price_cluster:
             df_cluster = pd.DataFrame(price_cluster)
 
             color_map = {
-                "Baixo": "#3B82F6",   # azul
-                "Médio": "#F59E0B",   # laranja
-                "Alto": "#EF4444"     # vermelho
+                "Baixo": "#3B82F6",   # Low (blue)
+                "Médio": "#F59E0B",   # Medium (orange)
+                "Alto": "#EF4444"     # High (red)
             }
 
             fig_cluster = px.scatter_mapbox(
@@ -116,6 +116,6 @@ def render_preco(get_data):
 
             st.plotly_chart(fig_cluster, use_container_width=True)
         else:
-            st.warning("Dados de clusterização não disponíveis.")
+            st.warning("Clustering data not available.")
     else:
-        st.warning("Dados de preço não encontrados.")
+        st.warning("Price data not found.")

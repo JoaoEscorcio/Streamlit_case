@@ -1,16 +1,15 @@
 import streamlit as st
 import pandas as pd
 import requests
-from aba1_mapa import render_mapa
-from aba2_preco import render_preco
-from aba3_distancias import render_distancias
+from aba1_map import render_mapa
+from aba2_price import render_preco
+from aba3_distance import render_distancias
 from aba4_temporal import render_temporal
 
-# ------------------- CONFIGURAÇÃO INICIAL DA PÁGINA -------------------
-st.set_page_config(page_title="Dashboard do Mercado Imobiliário em Miami", layout="wide")
+# ------------------- INITIAL PAGE SETUP -------------------
+st.set_page_config(page_title="Miami Real Estate Dashboard", layout="wide")
 
-# ------------------- CSS EMBUTIDO PERSONALIZADO -------------------
-# Estilização visual do dashboard com identidade moderna
+# ------------------- CUSTOM EMBEDDED CSS -------------------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -97,71 +96,71 @@ footer {
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------- FUNÇÃO PARA BUSCA DE DADOS VIA API -------------------
+# ------------------- FUNCTION TO FETCH DATA VIA API -------------------
 API_URL = "http://localhost:8000/api"
 
 def get_data(endpoint, params=None):
     """
-    Função genérica para fazer chamadas à API backend.
+    Generic function to make backend API calls.
     """
     try:
         response = requests.get(f"{API_URL}/{endpoint}", params=params)
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:
-        st.error(f"Erro ao obter dados: {e}")
+        st.error(f"Error fetching data: {e}")
         return {}
 
-# ------------------- CABEÇALHO DO DASHBOARD -------------------
-st.markdown("<h1>Dashboard do Mercado Imobiliário em Miami</h1>", unsafe_allow_html=True)
-st.markdown("<h2>Navegação entre Análises</h2>", unsafe_allow_html=True)
+# ------------------- DASHBOARD HEADER -------------------
+st.markdown("<h1>Miami Real Estate Market Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h2>Navigate between analyses</h2>", unsafe_allow_html=True)
 
-# Abas de navegação
-abas = [
-    "Mapa Interativo",
-    "Análise de Preço",
-    "Impacto das Distâncias",
-    "Análise Temporal de Vendas"
+# Navigation tabs
+tabs = [
+    "Interactive Map",
+    "Price Analysis",
+    "Impact of Distances",
+    "Sales Time Analysis"
 ]
-aberta = st.selectbox("", options=abas)
+selected_tab = st.selectbox("", options=tabs)
 
-# ------------------- FILTROS DINÂMICOS COM BASE NA API -------------------
-filtros_range = get_data("houses/filters-range")
+# ------------------- DYNAMIC FILTERS FROM API -------------------
+filters_range = get_data("houses/filters-range")
 
-# Valores padrão em caso de falha na API
-price_min = filtros_range.get("price_min", 0)
-price_max = filtros_range.get("price_max", 3000000)
-age_min = filtros_range.get("age_min", 0)
-age_max = filtros_range.get("age_max", 100)
-area_min = filtros_range.get("area_min", 0)
-area_max = filtros_range.get("area_max", 10000)
-qualities = filtros_range.get("qualities", list(range(1, 10)))
+# Default values in case API fails
+price_min = filters_range.get("price_min", 0)
+price_max = filters_range.get("price_max", 3000000)
+age_min = filters_range.get("age_min", 0)
+age_max = filters_range.get("age_max", 100)
+area_min = filters_range.get("area_min", 0)
+area_max = filters_range.get("area_max", 10000)
+qualities = filters_range.get("qualities", list(range(1, 10)))
 
-# ------------------- SIDEBAR: FILTROS INTERATIVOS -------------------
-st.sidebar.markdown("## Filtros Comuns")
+# ------------------- SIDEBAR: INTERACTIVE FILTERS -------------------
+st.sidebar.markdown("## Common Filters")
 
-# Opções de qualidade da estrutura
-quality_options = ["Qualquer"] + [str(q) for q in qualities]
+# Structure quality options
+quality_options = ["Any"] + [str(q) for q in qualities]
 
-# Faixa de preço
-min_price, max_price = st.sidebar.slider("Faixa de Preço ($)", price_min, price_max, (price_min, price_max))
+# Price range slider
+min_price, max_price = st.sidebar.slider("Price Range ($)", price_min, price_max, (price_min, price_max))
 
-# Idade
-max_age = st.sidebar.slider("Idade máxima das casas", age_min, age_max, age_max)
+# Age slider
+max_age = st.sidebar.slider("Maximum House Age", age_min, age_max, age_max)
 
-# Área
-min_area, max_area = st.sidebar.slider("Faixa de Área (sq ft)", area_min, area_max, (area_min, area_max))
+# Area slider
+min_area, max_area = st.sidebar.slider("Area Range (sq ft)", area_min, area_max, (area_min, area_max))
 
-# Qualidade da estrutura
-structure_quality = st.sidebar.selectbox("Qualidade da Estrutura", quality_options)
+# Structure quality selectbox
+structure_quality = st.sidebar.selectbox("Structure Quality", quality_options)
 
-# Filtros adicionais
-with st.sidebar.expander("🌊 Distância e Ruído", expanded=False):
-    max_ocean_dist = st.slider("Distância ao Oceano (m)", 0, 30000, 30000)
-    max_hwy_dist = st.slider("Distância à Rodovia (m)", 0, 10000, 10000)
-    airport_noise = st.selectbox("Ruído Aéreo", ["Qualquer", "Sim", "Não"])
+# Additional filters
+with st.sidebar.expander("🌊 Distance and Noise", expanded=False):
+    max_ocean_dist = st.slider("Distance to Ocean (m)", 0, 30000, 30000)
+    max_hwy_dist = st.slider("Distance to Highway (m)", 0, 10000, 10000)
+    airport_noise = st.selectbox("Airport Noise", ["Any", "Yes", "No"])
 
-# ------------------- CONSTRUÇÃO DO DICIONÁRIO DE PARÂMETROS -------------------
+# ------------------- PARAMETER DICTIONARY -------------------
 params = {
     "min_price": min_price,
     "max_price": max_price,
@@ -172,25 +171,25 @@ params = {
     "max_hwy_dist": max_hwy_dist,
 }
 
-# Adiciona filtros opcionais se selecionados
-if structure_quality != "Qualquer":
+# Optional filters
+if structure_quality != "Any":
     params["structure_quality"] = int(structure_quality)
-if airport_noise == "Sim":
+if airport_noise == "Yes":
     params["avno60plus"] = 1
-elif airport_noise == "Não":
+elif airport_noise == "No":
     params["avno60plus"] = 0
 
-# ------------------- LÓGICA DAS ABAS -------------------
-if aberta == "Mapa Interativo":
+# ------------------- TAB LOGIC -------------------
+if selected_tab == "Interactive Map":
     render_mapa(get_data, params)
-elif aberta == "Análise de Preço":
+elif selected_tab == "Price Analysis":
     render_preco(get_data)
-elif aberta == "Impacto das Distâncias":
+elif selected_tab == "Impact of Distances":
     render_distancias(get_data)
-elif aberta == "Análise Temporal de Vendas":
+elif selected_tab == "Sales Time Analysis":
     render_temporal(get_data)
 
-# ------------------- RODAPÉ -------------------
+# ------------------- FOOTER -------------------
 st.markdown("""
-    <footer>Desenvolvido por João Victor Escorcio • <a href='mailto:jv.escorcio@gmail.com'>Contato</a></footer>
+    <footer>Developed by João Victor Escorcio • <a href='mailto:jv.escorcio@gmail.com'>Contact</a></footer>
 """, unsafe_allow_html=True)

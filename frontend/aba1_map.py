@@ -1,28 +1,28 @@
-# frontend/pages/aba1_mapa.py
+# frontend/pages/aba1_map.py
 
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
 
 def render_mapa(get_data, params):
-    st.header("📍 Mapa Interativo com Filtros Avançados")
+    st.header("📍 Interactive Map with Advanced Filters")
 
     houses = get_data("houses", params)
 
     if not houses:
-        st.warning("Nenhum dado encontrado para os filtros selecionados.")
+        st.warning("No data found for the selected filters.")
         return
 
     df = pd.DataFrame(houses)
     required_cols = ["latitude", "longitude", "sale_prc", "tot_lvg_area", "structure_quality"]
     if not all(col in df.columns for col in required_cols):
-        st.error("Dados insuficientes para gerar o mapa.")
+        st.error("Insufficient data to generate the map.")
         return
 
-    # ------- Mapa 1: Scatterplot por estrutura --------
-    st.subheader("🔴 Distribuição dos Imóveis por Qualidade da Estrutura")
+    # ------- Map 1: Scatterplot by Structure Quality --------
+    st.subheader("🔴 Property Distribution by Structure Quality")
 
-    df["color"] = df["structure_quality"].apply(lambda q: [255, int(255 - q * 28), 0, 160])  # degrade laranja/vermelho
+    df["color"] = df["structure_quality"].apply(lambda q: [255, int(255 - q * 28), 0, 160])  # orange/red gradient
 
     st.pydeck_chart(pdk.Deck(
         map_style='mapbox://styles/mapbox/light-v9',
@@ -44,12 +44,12 @@ def render_mapa(get_data, params):
             )
         ],
         tooltip={
-            "text": "🏡 Preço: ${sale_prc}\n📐 Área: {tot_lvg_area} sq ft\n🏗️ Qualidade: {structure_quality}"
+            "text": "🏡 Price: ${sale_prc}\n📐 Area: {tot_lvg_area} sq ft\n🏗️ Quality: {structure_quality}"
         }
     ))
 
-    # ------- Mapa 2: Hexbin de densidade de imóveis -------
-    st.subheader("🟣 Densidade de Imóveis por Região (Hexágonos)")
+    # ------- Map 2: Hexbin of Property Density --------
+    st.subheader("🟣 Property Density by Region (Hexagons)")
 
     st.pydeck_chart(pdk.Deck(
         map_style='mapbox://styles/mapbox/light-v9',
@@ -71,5 +71,5 @@ def render_mapa(get_data, params):
                 extruded=True,
             )
         ],
-        tooltip={"text": "📍 Total de imóveis na área: {elevationValue}"}
+        tooltip={"text": "📍 Total properties in area: {elevationValue}"}
     ))
