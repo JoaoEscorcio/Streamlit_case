@@ -1,154 +1,98 @@
-# 🌍 Miami Real Estate Market Dashboard
+# Miami Real Estate Market Dashboard
 
-This project is an **interactive dashboard** built with **Streamlit** and **FastAPI**, consuming real estate data from Miami to deliver **visual analyses and strategic insights** on property prices, locations, structural quality, and external influences like noise and distances.
+Interactive dashboard built with Streamlit and FastAPI, consuming real
+estate data from Miami to deliver visual analyses and insights on property
+prices, locations, structural quality, and external factors like noise and
+distance to amenities.
 
----
+## Stack
 
-## 🚀 Technologies Used
+- [Streamlit](https://streamlit.io/) — interactive web interface
+- [FastAPI](https://fastapi.tiangolo.com/) — backend API
+- [Supabase](https://supabase.com/) — PostgreSQL database and auth
+- [Plotly](https://plotly.com/python/) — visualizations
+- [Pydeck](https://deckgl.readthedocs.io/en/latest/) — interactive geographic maps
 
-- [Streamlit](https://streamlit.io/) – Interactive web interface
-- [FastAPI](https://fastapi.tiangolo.com/) – Backend API services
-- [Supabase](https://supabase.com/) – Cloud-based database and authentication (PostgreSQL)
-- [Plotly](https://plotly.com/python/) – Dynamic and professional visualizations
-- [Pydeck](https://deckgl.readthedocs.io/en/latest/) – Geographic visualizations (interactive maps)
+## Features
 
----
+**Interactive Map** — geographic visualization of filtered properties, scatterplot colored by structure quality, hexbin map showing property density by region.
 
-## 🔍 Features
+**Price Analysis** — KPIs (average, median, min, max), price histogram and boxplot, area vs. price scatterplot, geographic clustering by price range.
 
-### 📊 Tab 1: **Interactive Map**
+**Impact of Distances** — KPIs comparing prices by proximity to ocean, highways, and airport noise; bar charts, boxplots, and distance vs. price scatterplots.
 
-- Geographic visualization of filtered properties
-- Scatterplot colored by structure quality
-- Hexbin map showing property density by region
+**Sales Time Analysis** — monthly evolution of sales prices, comparative KPIs with monthly variation, 3-month moving average trend.
 
-### 💰 Tab 2: **Price Analysis**
+**Filters** — price range, area and age ranges, structure quality, distance to ocean/highway/airport noise.
 
-- KPIs: average, median, minimum, and maximum prices
-- Price histogram and boxplot
-- Scatterplot of area vs. price
-- Geographic clustering by price range (low, medium, high)
-
-### 🚗 Tab 3: **Impact of Distances**
-
-- KPIs comparing prices by proximity to ocean, highways, and airport noise
-- Bar charts and boxplots categorizing these effects
-- Scatterplots of distances vs. price
-
-### 🌐 Tab 4: **Sales Time Analysis**
-
-- Monthly evolution of sales prices
-- Comparative KPIs with monthly variation percentage
-- 3-month moving average trend analysis
-
-### ⚙️ Filters
-
-- Price range
-- Area and age ranges
-- Structure quality
-- Distance to ocean, highway, and airport noise
-
----
-
-## 🚧 Project Structure
+## Project structure
 
 ```
 .
-├── api/                    # FastAPI - Data endpoints
-│   ├── main.py             # Main API file
-├── frontend/               # Streamlit app
-│   ├── app.py              # Main entry point
-│   ├── pages/
-│   │   ├── aba1_map.py
-│   │   ├── aba2_price.py
-│   │   ├── aba3_distance.py
-│   │   └── aba4_temporal.py
-├── poetry.lock             # Dependencies lock file
-├── pyproject.toml          # Project metadata and dependencies
-├── README.md
+├── api/                    # FastAPI - data endpoints
+│   └── main.py
+├── frontend/                # Streamlit app
+│   ├── app.py
+│   └── pages/
+│       ├── aba1_map.py
+│       ├── aba2_price.py
+│       ├── aba3_distance.py
+│       └── aba4_temporal.py
+├── poetry.lock
+├── pyproject.toml
 ```
 
----
-
-## 🚫 Requirements
+## Requirements
 
 - Python 3.10+
-- Free account on [Supabase](https://supabase.com/)
+- A [Supabase](https://supabase.com/) project
 
----
-
-## 📚 How to Run the Project Locally
-
-### 1. Clone the repository
+## Running locally
 
 ```bash
 git clone https://github.com/JoaoEscorcio/Streamlit_case.git
 cd Streamlit_case
-```
 
-### 2. Create and activate a virtual environment
-
-```bash
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 .venv\Scripts\activate     # Windows
-```
 
-### 3. Install dependencies with Poetry
-
-```bash
 poetry install
 ```
 
-### 4. Create the `.env` file
+Create a `.env` file:
 
 ```env
 SUPABASE_URL=https://<your-project>.supabase.co
-SUPABASE_KEY=eyJhbGciOi...   # Your API Key
+SUPABASE_KEY=<your-api-key>
 ```
 
-### 5. Run the API (FastAPI)
+Run the API:
 
 ```bash
 cd api
 uvicorn main:app --reload --port 8000
 ```
 
-### 6. Run the Frontend (Streamlit)
-
-Open another terminal:
+Run the frontend (separate terminal):
 
 ```bash
 cd frontend
 streamlit run app.py
 ```
 
----
+## Deployment
 
-## 🏙️ Deployment
+- **Render.com** for the FastAPI backend
+- **Streamlit Community Cloud** for the frontend
 
-### ✨ Suggested Platforms:
-
-- **Render.com**: Ideal for running FastAPI (backend)
-- **Streamlit Community Cloud**: Free frontend hosting
-
----
-
-## 💼 Author
-
-**João Victor Escorcio**\
-Data Analyst | Python | Streamlit | BI | Real Estate Data\
-[LinkedIn](https://www.linkedin.com/in/joaoescorcio/) • [Medium](https://medium.com/@jv.escorcio) • [jv.escorcio@gmail.com](mailto\:jv.escorcio@gmail.com)
-
----
-
-## ✨ Future To-Do
+## Possible next steps
 
 - User authentication
-- Report export functionality
-- Price prediction using Machine Learning
+- Report export
+- Price prediction (ML)
 
----
+## Author
 
-Made with ❤️ by a data enthusiast!
-
+João Escórcio — AI & Data Engineer
+[LinkedIn](https://www.linkedin.com/in/joaovictorescorcio) · [Medium](https://medium.com/@jv.escorcio)
